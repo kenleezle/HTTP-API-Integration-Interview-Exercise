@@ -19,7 +19,10 @@ gem install --local caredox_immunization_status-0.0.0.gem
 require 'rubygems'
 require 'caredox_immunization_status'
 
-ImmunizationStatus.find_by_person_id_and_state(1231231,'CA')
+istatus = ImmunizationStatus.find_by_person_id_and_state(1231231,'CA')
+puts istatus.status
+puts istatus.severity
+
 ```
 
 
