@@ -26,20 +26,20 @@ class TestHttpServer
     @server.close
   end
   def self.run_test_servers
+    return unless @@threads.empty?
+
     servers = Array.new
     servers.push TestHttpServer.new
     servers.push TestHttpServer.new(11002,200,'{"status": "current", "severity": "none"}')
     servers.push TestHttpServer.new(11003,200,'{"status": "bad-status", "severity": "high"}')
     servers.push TestHttpServer.new(11004,200,'{"status": "out-of-date", "severity": "bad-severity"}')
     servers.push TestHttpServer.new(11005,200,'')
+    servers.push TestHttpServer.new(11006,200,'this is not valid json')
 
     servers.each { | s | @@threads.push Thread.new { s.run } }
     sleep 1
   end
   def self.wait_on_threads
     @@threads.each { | t | t.join }
-  end
-  def self.kill_test_servers
-    @@threads.each { | t | t.kill }
   end
 end

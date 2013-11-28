@@ -3,25 +3,9 @@ require 'test_http_server.rb'
 require 'caredox_immunization_status.rb'
 
 class CaredoxImmunizationStatusTestSuite < Test::Unit::TestCase
-  class << self
-    def startup
-      TestHttpServer.run_test_servers
-    end
-    def shutdown
-      TestHttpServer.kill_test_servers
-    end
-    def suite
-      mysuite = super
-      def mysuite.run(*args)
-        CaredoxImmunizationStatusTestSuite.startup()
-        super
-        CaredoxImmunizationStatusTestSuite.shutdown()
-      end
-      mysuite
-    end
-  end
   def setup
     ImmunizationStatus.base_url = "http://localhost"
+    TestHttpServer.run_test_servers
   end
   def test_all_systems_ok
     ImmunizationStatus.port = 11002
@@ -39,7 +23,7 @@ class CaredoxImmunizationStatusTestSuite < Test::Unit::TestCase
     assert_nil(istatus)
   end
   def test_no_connection_to_server
-    ImmunizationStatus.port = 11006
+    ImmunizationStatus.port = 11010
     istatus = ImmunizationStatus.find_by_person_id_and_state(1123123123,'NJ')
     assert_nil(istatus)
   end
@@ -58,8 +42,13 @@ class CaredoxImmunizationStatusTestSuite < Test::Unit::TestCase
     istatus = ImmunizationStatus.find_by_person_id_and_state(1123123123,'NJ')
     assert_nil(istatus)
   end
-  def test_error_response_body_from_server
+  def test_empty_response_body_from_server
     ImmunizationStatus.port = 11005
+    istatus = ImmunizationStatus.find_by_person_id_and_state(1123123123,'NJ')
+    assert_nil(istatus)
+  end
+  def test_invalid_json_response_body_from_server
+    ImmunizationStatus.port = 11006
     istatus = ImmunizationStatus.find_by_person_id_and_state(1123123123,'NJ')
     assert_nil(istatus)
   end
