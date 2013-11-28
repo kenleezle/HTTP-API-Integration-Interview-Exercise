@@ -61,7 +61,12 @@ class ImmunizationStatus
       return nil
     end
 
-    response = JSON.parse(res.body)
+    begin
+      response = JSON.parse(res.body)
+    rescue => e
+       # "[ERROR] Did not receive valid JSON from #{url} (#{res.body}): #{e}"
+      return nil
+    end
 
     # [ERROR] Received bad status from #{url} for person id and state #{id} #{state}
     return nil unless STATUSES.include?(response['status'])
